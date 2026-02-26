@@ -19,17 +19,11 @@ afterAll(async () => {
 });
 
 describe('"employees" queries', () => {
+  let createdEmployee;
+
   test("getEmployees() returns the array of employees", async () => {
     const { rows: expected } = await db.query("SELECT * FROM employees");
     const result = await getEmployees();
-    expect(result).toEqual(expected);
-  });
-
-  test("getEmployee() returns the employee with the given id", async () => {
-    const {
-      rows: [expected],
-    } = await db.query("SELECT * FROM employees WHERE id = 1");
-    const result = await getEmployee(1);
     expect(result).toEqual(expected);
   });
 
@@ -40,6 +34,7 @@ describe('"employees" queries', () => {
       salary: 100001,
     };
     const result = await createEmployee(employee);
+    createdEmployee = result;
     expect(result).toEqual(
       expect.objectContaining({
         name: employee.name,
@@ -49,9 +44,19 @@ describe('"employees" queries', () => {
     );
   });
 
+  test("getEmployee() returns the employee with the given id", async () => {
+    const {
+      rows: [expected],
+    } = await db.query("SELECT * FROM employees WHERE id = $1", [
+      createdEmployee.id,
+    ]);
+    const result = await getEmployee(createdEmployee.id);
+    expect(result).toEqual(expected);
+  });
+
   test("updateEmployee() updates and returns the employee", async () => {
     const employee = {
-      id: 1,
+      id: createdEmployee.id,
       name: "updated employee",
       birthday: "1001-10-01",
       salary: 100001,
@@ -67,8 +72,10 @@ describe('"employees" queries', () => {
   });
 
   test("deleteEmployee() deletes the employee", async () => {
-    await deleteEmployee(1);
-    const { rows } = await db.query("SELECT * FROM employees WHERE id = 1");
+    await deleteEmployee(createdEmployee.id);
+    const { rows } = await db.query("SELECT * FROM employees WHERE id = $1", [
+      createdEmployee.id,
+    ]);
     expect(rows.length).toBe(0);
   });
 });
