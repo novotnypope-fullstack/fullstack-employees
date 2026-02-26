@@ -19,17 +19,14 @@ middleware!
   - Sends 400 if request body is missing a required field
   - Sends the newly created employee with status 201
 - `GET /employees/:id`
-  - Sends 400 if provided id is not a positive integer
   - Sends 404 if employee does not exist
   - Sends employee with specified ID
 - `DELETE /employees/:id`
-  - Sends 400 if provided id is not a positive integer
   - Sends 404 if employee does not exist
   - Deletes the specified employee and sends status 204
 - `PUT /employees/:id` updates employee with specified ID with provided data
   - Sends 400 if request body is not provided
   - Sends 400 if request body is missing a required field
-  - Sends 400 if provided id is not a positive integer
   - Sends 404 if employee does not exist
   - Updates and sends the employee with status 200
 
