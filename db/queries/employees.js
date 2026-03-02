@@ -1,10 +1,16 @@
+import db from "#db/client";
+
 /** @returns the employee created according to the provided details */
 export async function createEmployee({ name, birthday, salary }) {
-  // TODO
+  // had to fix RETURNING * twice before it worked lol
+  const result = await db.query(
+    'INSERT INTO employees (name, birthday, salary) VALUES ($1, $2, $3) RETURNING *',
+    [name, birthday, salary]
+  );
+  return result.rows[0];
 }
 
 // === Part 2 ===
-
 /** @returns all employees */
 export async function getEmployees() {
   // TODO
