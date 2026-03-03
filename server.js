@@ -1,10 +1,25 @@
-import app from "#app";
-import db from "#db/client";
+// server.js - main entry (had to fix the error middleware twice lol)
 
-const PORT = process.env.PORT ?? 3000;
+const express = require('express');
+const employeesRouter = require('./employeesRouter');
 
-await db.connect();
+const app = express();
 
+app.use(express.json()); // body parsing middleware
+
+app.get('/', (req, res) => {
+  res.send('Welcome to the Fullstack Employees API.');
+});
+
+app.use('/employees', employeesRouter);
+
+// global error handler
+app.use((err, req, res, next) => {
+  console.error('ERROR:', err.message); // keep for debugging
+  res.status(500).json({ error: 'something went wrong' });
+});
+
+const PORT = 3000;
 app.listen(PORT, () => {
-  console.log(`Listening on port ${PORT}...`);
+  console.log(`server running on http://localhost:${PORT}`);
 });
